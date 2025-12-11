@@ -1,152 +1,118 @@
-# elgeyo_marakwet_landslide
-Landslide Visualization in Elgeyo Marakwet, Kenya (2025)
-Sentinel-2 Analysis and MSAVI-Based Change Detection Using Google Earth Engine
+# Landslide Visualization in Elgeyo Marakwet, Kenya (2025)
+## Sentinel-2 and MSAVI Change Detection Using Google Earth Engine
 
-This repository contains a Google Earth Engine (GEE) script developed to visualize the impacts of the November 2025 landslide that occurred in Chesongoch, Elgeyo Marakwet County, Kenya. The study applies Sentinel-2 optical imagery and the Modified Soil Adjusted Vegetation Index (MSAVI) to assess pre- and post-event landscape conditions. The objective is to demonstrate how vegetation-based indices and temporal composites can support rapid landslide assessment in data-scarce environments.
+## 1. Introduction
 
-1. Background
+This repository documents a Google Earth Engine (GEE) workflow developed to visualize the November 2025 landslide in Chesongoch, Elgeyo Marakwet County, Kenya. The analysis uses pre- and post-event Sentinel-2 imagery and the Modified Soil Adjusted Vegetation Index (MSAVI) to assess vegetation disturbance and surface changes associated with the event.
 
-In early November 2025, heavy rainfall triggered a large landslide in the Chesongoch region of Elgeyo Marakwet. The event resulted in the loss of lives, displacement of households, and destruction of property. Due to the remote nature of the affected area, satellite Earth observation provides an efficient means to examine the extent and severity of environmental disturbance.
+The workflow is intended as a compact example of how freely available satellite data and cloud-based processing can support rapid landslide impact assessment in data-scarce environments.
 
-This analysis focuses on comparing surface conditions before and after the event by examining changes in vegetation vigor and surface reflectance patterns.
+## 2. Study Area and Event Context
 
-2. Data and Preprocessing
+In early November 2025, intense rainfall triggered a large landslide in the Chesongoch area of Elgeyo Marakwet, Kenya. The event resulted in loss of life and damage to housing and infrastructure. Direct field assessment in such terrain is often difficult and delayed, making satellite Earth observation a useful complementary source of information.
 
-The analysis uses Sentinel-2 Harmonized Level-1C imagery available in Google Earth Engine.
+The Area of Interest (AOI) is defined as a polygon in the GEE Code Editor representing the landslide-affected region around Chesongoch.
 
-Temporal windows
+## 3. Data and Pre-Processing
 
-Pre-event composite: 15 October – 31 October 2025
+The analysis uses Sentinel-2 Harmonized Level-1C imagery available in Google Earth Engine under the collection:
 
-Post-event composite: 4 November – 10 November 2025
+`COPERNICUS/S2_HARMONIZED`
 
-Preprocessing steps
+Two time windows are used:
 
-Filter imagery intersecting the Area of Interest (AOI).
+- Pre-event: 15 October 2025 – 31 October 2025  
+- Post-event: 4 November 2025 – 10 November 2025  
 
-Apply temporal filtering for the pre- and post-event periods.
+For each period, the following preprocessing steps are applied within GEE:
 
-Apply a cloud threshold using the CLOUDY_PIXEL_PERCENTAGE metadata field (< 30%).
+1. Filter the Sentinel-2 collection to images intersecting the AOI.  
+2. Filter by the respective date range (pre-event or post-event).  
+3. Filter by cloud contamination using the `CLOUDY_PIXEL_PERCENTAGE` metadata (threshold: less than 30%).  
+4. Clip images to the AOI.  
+5. Sort by cloudiness and compute a median composite for each period.
 
-Clip each image to the AOI.
+These steps provide cloud-reduced, spatially consistent pre- and post-event images suitable for visual comparison and index calculation.
 
-Sort by cloud cover and compute median composites for each period.
+## 4. MSAVI Index
 
-These steps ensure that the before/after comparisons are consistent, cloud-minimized, and representative of overall surface conditions.
+To characterise vegetation disturbance, the Modified Soil Adjusted Vegetation Index (MSAVI) is computed for both the pre-event and post-event composites. MSAVI is particularly suitable in environments where vegetation is mixed with exposed soil, as is typical in landslide-affected terrain.
 
-3. MSAVI Computation
+MSAVI is defined using the near-infrared (NIR) and red bands as:
 
-The Modified Soil Adjusted Vegetation Index (MSAVI) is used to enhance vegetation signals in areas where soil exposure is significant. This makes it suitable for identifying vegetation disturbance associated with landslides.
+MSAVI = [2 * NIR + 1 − sqrt((2 * NIR + 1)^2 − 8 * (NIR − RED))] / 2
 
-The index is computed using the following formulation:
+In this implementation:
 
-MSAVI
-=
-2
-⋅
-𝑁
-𝐼
-𝑅
-+
-1
-−
-(
-2
-⋅
-𝑁
-𝐼
-𝑅
-+
-1
-)
-2
-−
-8
-(
-𝑁
-𝐼
-𝑅
-−
-𝑅
-𝐸
-𝐷
-)
-2
-MSAVI=
-2
-2⋅NIR+1−
-(2⋅NIR+1)
-2
-−8(NIR−RED)
-	​
+- NIR corresponds to Sentinel-2 Band 8  
+- RED corresponds to Sentinel-2 Band 4  
 
-	​
+The resulting MSAVI layers provide a proxy for vegetation vigour and facilitate the identification of areas where vegetation has been removed or degraded by the landslide.
 
+## 5. Visualisation in Google Earth Engine
 
-Where:
+The script produces two main types of visual products:
 
-NIR corresponds to Sentinel-2 Band 8
+1. True-colour composites using bands 4 (red), 3 (green) and 2 (blue) for pre- and post-event conditions.  
+2. MSAVI layers for pre- and post-event conditions, displayed with a colour palette highlighting differences in vegetation condition.
 
-RED corresponds to Sentinel-2 Band 4
+An interactive split-panel interface is implemented in the GEE user interface:
 
-The MSAVI layers are generated for both the pre-event and post-event composites to facilitate comparison.
+- The left map panel displays pre-event imagery.  
+- The right map panel displays post-event imagery.  
 
-4. Visualization Approach
+A simple toggle allows the user to switch both panels between:
 
-Two types of visual products are produced:
+- True-colour composites, and  
+- MSAVI layers.
 
-True-color composites (Bands 4-3-2) to show natural surface appearance.
+Both panels are linked, meaning panning and zooming are synchronized. This design supports systematic visual comparison of spatial patterns before and after the landslide.
 
-MSAVI layers to highlight changes in vegetation cover and soil exposure.
+## 6. How to Run the Script
 
-An interactive split-panel interface is implemented in GEE, allowing simultaneous visualization of:
+To reproduce the analysis in Google Earth Engine:
 
-True-color before vs. true-color after
+1. Open the Google Earth Engine Code Editor:  
+   https://code.earthengine.google.com
 
-MSAVI before vs. MSAVI after
+2. Create a new script and paste the contents of the provided GEE script file (the JavaScript code for this project).
 
-A toggle control enables users to switch between true-color and MSAVI views. The synchronized maps support detailed inspection of spatial change patterns associated with the landslide.
+3. Define an Area of Interest (AOI) as a polygon in the Code Editor and name it `aoi`.  
+   - This can be done by drawing a polygon around the Chesongoch landslide area or by importing a suitable AOI asset and assigning it the variable name `aoi`.
 
-5. Running the Analysis in Google Earth Engine
+4. Run the script.  
+   - The editor will generate:
+     - Pre-event and post-event true-colour composites.  
+     - Pre-event and post-event MSAVI layers.  
+     - A split-panel viewer with a toggle between true-colour and MSAVI views.
 
-To reproduce the results:
+No external data files are required; all imagery is accessed directly from the Sentinel-2 collection hosted on GEE.
 
-Open the Google Earth Engine Code Editor.
+## 7. Interpretation
 
-Create a new script and paste the contents of elgeyo_marakwet_landslide_msavi.js.
+Landslide-affected areas are expected to show:
 
-Define the AOI as a polygon (drawn or imported asset), named aoi.
+- A reduction in MSAVI values in the post-event image, indicating loss of vegetation and exposure of soil or rock.  
+- Increased brightness and changes in texture in the true-colour imagery, corresponding to bare or disturbed surfaces.  
+- Coherent spatial patterns along the slope, often extending downslope from a source zone.
 
-Run the script to generate the before/after composites and the split-panel viewer.
+By jointly analysing the true-colour composites and MSAVI maps, it is possible to delineate the landslide body and associated disturbed zones with greater confidence than by visual inspection alone.
 
-The script is fully self-contained, requiring only the AOI definition.
+## 8. Applications and Adaptation
 
-6. Interpretation Notes
+The workflow illustrated in this repository can be adapted to:
 
-Areas impacted by the landslide typically show:
+- Other landslide events in different regions.  
+- Broader change-detection studies focusing on vegetation disturbance.  
+- Rapid environmental impact assessment following floods, storms or other hazards.  
 
-Reduced MSAVI values in the post-event image, indicating vegetation removal or soil disturbance.
+Only the AOI definition and the date ranges need to be modified to apply the method to a different event.
 
-Enhanced visibility of bare surfaces in the true-color composite.
+## 9. Author
 
-Distinct spatial patterns where the landslide body moved downslope.
+This script and documentation were prepared by:
 
-MSAVI is particularly informative for detecting subtle disturbance in areas where true-color imagery alone may not fully capture vegetation loss.
+Mary Muthee  
+Geospatial Data Scientist and Copernicus Master in Digital Earth student.
 
-7. Purpose and Use
-
-This workflow provides a reproducible approach for:
-
-Rapid post-disaster assessment
-
-Landslide disturbance mapping
-
-Vegetation condition monitoring
-
-Demonstrating the use of GEE for environmental hazard analysis
-
-The methodology can be adapted to other regions or hazard types requiring before/after comparisons.
-
-8. Script
-
-The complete script used in this analysis is provided in the code directory of this repository.
+Please cite or acknowledge this work if you reuse the workflow in reports, teaching material or derived analyses.
