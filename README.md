@@ -22,8 +22,11 @@ The analysis uses Sentinel-2 Harmonized Level-1C imagery available in Google Ear
 
 Two time windows are used:
 
-- Pre-event: 15 October 2025 – 31 October 2025  
-- Post-event: 4 November 2025 – 10 November 2025  
+- Pre-event: 15 October 2025 – 31 October 2025
+  ![Current elephant distribution](Before_TrueColor_Image.png)
+
+- Post-event: 4 November 2025 – 10 November 2025
+  ![Current elephant distribution](After_TrueColor_Image.png)
 
 For each period, the following preprocessing steps are applied within GEE:
 
