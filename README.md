@@ -2,6 +2,7 @@
 ## Sentinel-2 and MSAVI Change Detection Using Google Earth Engine
 
 ## 1. Introduction
+![Current elephant distribution](After_Msavi.png)
 
 This repository documents a Google Earth Engine (GEE) workflow developed to visualize the November 2025 landslide in Chesongoch, Elgeyo Marakwet County, Kenya. The analysis uses pre- and post-event Sentinel-2 imagery and the Modified Soil Adjusted Vegetation Index (MSAVI) to assess vegetation disturbance and surface changes associated with the event.
 
